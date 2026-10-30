@@ -21,6 +21,25 @@ services:
     volumes:
       - redis-data:/data
 
+  storage:
+    image: rustfs/rustfs:latest
+    container_name: sampleshelf-storage
+    restart: unless-stopped
+    command: /data
+    environment:
+      RUSTFS_ACCESS_KEY: sampleshelf
+      RUSTFS_SECRET_KEY: sampleshelf-secret
+      RUSTFS_ADDRESS: ":9000"
+      RUSTFS_CONSOLE_ADDRESS: ":9001"
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_CORS_ALLOWED_ORIGINS: "http://localhost:3000"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - storage-data:/data
+
 volumes:
   postgres-data:
   redis-data:
+  storage-data:
