@@ -1,8 +1,11 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { Uploader } from "@/components/Uploader";
+import { connection } from "next/server";
 
 async function LibraryContent() {
+  await connection();
   const session = await auth();
 
   if (!session?.user) {
@@ -10,11 +13,14 @@ async function LibraryContent() {
   }
 
   return (
-    <div className="space-y-2">
-      <h1 className="text-2xl font-bold">My library</h1>
-      <p className="text-gray-600">
-        Welcome, {session.user.name}. Your samples will appear here.
-      </p>
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <h1 className="text-2xl font-bold">My library</h1>
+        <p className="text-gray-600">
+          Welcome, {session.user.name}. Your samples will appear here.
+        </p>
+      </div>
+      <Uploader />
     </div>
   );
 }

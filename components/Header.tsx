@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { auth, signIn, signOut } from "@/auth";
+import { connection } from "next/server";
 
 async function UserMenu() {
+  await connection();
   const session = await auth();
 
   if (!session?.user) {

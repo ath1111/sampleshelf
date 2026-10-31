@@ -4,15 +4,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { s3, BUCKET } from "@/lib/storage";
 
-const MAX_SIZE_BYTES = 100 * 1024 * 1024; // 100 MB
-
-// File extension -> the content type we'll store it with
-const ALLOWED_TYPES: Record<string, string> = {
-  wav: "audio/wav",
-  aif: "audio/aiff",
-  aiff: "audio/aiff",
-  flac: "audio/flac",
-};
+import { ALLOWED_TYPES, MAX_SIZE_BYTES } from "@/lib/upload-rules";
 
 export async function POST(request: Request) {
   // 1. Must be signed in
