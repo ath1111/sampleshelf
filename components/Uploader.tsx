@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ALLOWED_TYPES, MAX_SIZE_BYTES } from "@/lib/upload-rules";
 
-type Status = "idle" | "preparing" | "uploading" | "done" | "error";
+type Status = "idle" | "preparing" | "uploading" | "finishing" | "done" | "error";
 
 function uploadWithProgress(
   url: string,
@@ -79,17 +79,25 @@ export function Uploader() {
       setStatus("uploading");
       await uploadWithProgress(data.uploadUrl, file, data.contentType, setProgress);
 
-      // 3. (Step 5) Tell our server the upload is finished
+      // 3. Tell our server the upload is finished
+      setStatus("finishing");
+      const completeRes = await fetch(`/api/uploads/${data.sampleId}/complete`, {
+        method: "POST",
+      });
+      if (!completeRes.ok) {
+        const completeData = await completeRes.json().catch(() => ({}));
+        throw new Error(completeData.error ?? "Could not finish the upload.");
+      }
 
       setStatus("done");
-      setMessage("Upload complete.");
+      setMessage("Upload complete. Processing will start shortly.");      
     } catch (err) {
       setStatus("error");
       setMessage(err instanceof Error ? err.message : "Something went wrong.");
     }
   }
 
-  const busy = status === "preparing" || status === "uploading";
+  const busy = status === "preparing" || status === "uploading" || status === "finishing";
 
   return (
     <div className="space-y-4 rounded-lg border p-6">
@@ -115,14 +123,17 @@ export function Uploader() {
             <span>
               {status === "preparing" && "Preparing…"}
               {status === "uploading" && `${progress}%`}
+              {status === "finishing" && "Finishing…"}
             </span>
           </div>
 
-          {(status === "uploading" || status === "done") && (
+          {(status === "uploading" || status === "finishing" || status === "done") && (
             <div className="h-2 w-full overflow-hidden rounded bg-gray-200">
               <div
                 className="h-full bg-gray-800 transition-all"
-                style={{ width: `${status === "done" ? 100 : progress}%` }}
+                style={{
+                  width: `${status === "uploading" ? progress : 100}%`,
+                }}
               />
             </div>
           )}
