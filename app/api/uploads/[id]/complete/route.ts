@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { s3, BUCKET } from "@/lib/storage";
 import { MAX_SIZE_BYTES } from "@/lib/upload-rules";
+import { enqueueAudioProcessing } from "@/lib/queue";
 
 export async function POST(
   _request: Request,
@@ -75,5 +76,21 @@ export async function POST(
     );
   }
 
+    // 6. Hand the sample to the background worker
+  try {
+    await enqueueAudioProcessing(id);
+  } catch (err) {
+    console.error("Failed to enqueue audio processing", err);
+    await prisma.sample.update({
+      where: { id },
+      data: { status: "UPLOADING" },
+    });
+    return Response.json(
+      { error: "Processing is temporarily unavailable. Please try again." },
+      { status: 503 }
+    );
+  }
+
   return Response.json({ id, status: "PROCESSING" });
+
 }
