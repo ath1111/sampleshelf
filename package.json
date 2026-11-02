@@ -14,6 +14,8 @@
     "@aws-sdk/s3-request-presigner": "^3.1160.0",
     "@prisma/adapter-pg": "^7.10.1",
     "@prisma/client": "^7.10.1",
+    "bullmq": "^6.5.3",
+    "ioredis": "^6.0.0",
     "next": "16.4.3",
     "next-auth": "^5.0.0-beta.32",
     "pg": "^8.23.1",
@@ -31,14 +33,15 @@
     "eslint-config-next": "16.4.3",
     "prisma": "^7.10.1",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   },
   "allowScripts": {
     "unrs-resolver@1.12.2": true,
     "esbuild@0.28.2": true,
     "workerd@1.20260704.1": true,
-    "msgpackr-extract@3.0.4": true,
     "@prisma/engines@7.10.1": true,
-    "prisma@7.10.1": true
+    "prisma@7.10.1": true,
+    "msgpackr-extract@3.0.6": true
   }
 }
